@@ -16,7 +16,7 @@ object Emitter:
   /** The result of generating the code of an expression. */
   type Result[+T] = yafl.Result[T, Context]
 
-  /** Returns code of `program`, reading the type of each term from `types`. */
+  /** Returns code of `program`. */
   def emit(program: TypedProgram): String =
     val main = emitMain(program.syntax)(using Context(program.types))
     s"(module ${main.value})"
@@ -35,10 +35,10 @@ object Emitter:
     }
   }
 
-  /** Returns the code computing the value expressed by `term`. */
-  private def emitValue(term: Syntax[TermTree])(using Context): Result[Rope] = {
+  /** Returns the code computing the value expressed by `tree`. */
+  private def emitValue(tree: Syntax[TermTree])(using Context): Result[Rope] = {
     import TermTree.TermApplication as F
-    term.value match
+    tree.value match
       case TermTree.IntegerLiteral(n) =>
         result(Rope(s"(i32.const ${n})"))
 

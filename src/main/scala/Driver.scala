@@ -7,6 +7,7 @@ import scala.io.AnsiColor.{BOLD, GREEN, RED, RESET}
 
 import yafl.emitter.Emitter
 import yafl.parser.Parser
+import yafl.optimizer.Optimizer
 import yafl.typer.Typer
 
 /** The type of a file being generate by a compiler run. */
@@ -95,7 +96,8 @@ end given
       write(untyped.toString, arguments.output)
     else
       val typed = Typer.check(untyped)
-      val wat = Emitter.emit(typed)
+      val optimized = Optimizer.optimize(typed)
+      val wat = Emitter.emit(optimized)
       if arguments.stage == OutputContents.Wat then
         write(wat, arguments.output)
       else

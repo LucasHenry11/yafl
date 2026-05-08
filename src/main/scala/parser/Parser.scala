@@ -19,18 +19,52 @@ object Parser:
 
   end Context
 
-  /** The result of a parsing method. */
+  /** The result of a parsing method.
+    *
+    * A result is essentially a pair composed of a value, typically parsed from the input source,
+    * and a context denoting the state of the parser. The latter can be understood as the "state"
+    * of the parser, which is meant to flow into parsing methods.
+    */
   final class Result[+T](val stack: T, val context: Context):
 
-    /** Returns a copy of `this` with its stack transformed by `transform`. */
+    /** Returns a copy of `this` with its stack transformed by `transform`.
+      *
+      * Use this method to modify the contents of a result without modifying its context. More
+      * formally, if `r = Result(v, x)`, then `r.map(f)` is equal to `Result(f(v), x)`.
+      */
     def map[U](transform: T => U): Result[U] =
       new Result(transform(stack), context)
 
-    /** Returns the element in `this` combined with the result of the parser returned by `after`,
-      * applied in `context`.
+    /** Returns the result of applying `after` on the contents of `this`.
+      *
+      * Use this method to combine the value of a result with a function applied in the context
+      * associated with that value. More formally, if `r = Result(v, x)`, then `r.and(f)` is
+      * equal to `f(v)(using x)`.
+      *
+      * To illustrate, consider the following definitions:
+      *
+      *     def f(using Context): Result[Int] = ???
+      *     def g(n: Int)(using Context): Result[Boolean] = Result(n != 0)
+      *
+      * Given some context, the function `f` is assumed to produce an integer value together with
+      * an updated context. We can compose this function with `g` with `f.and(g)` so that `g` will
+      * be applied on the integer produced by `f` and the updated context.
       */
     def and[U](after: T => (Context ?=> Result[U])): Result[U] =
       after(stack)(using context)
+
+    /** Returns `stack` in the context returned by `after`.
+      *
+      * Use this method to apply a function in the context wrapped in a result and discard its
+      * result while keeping the associated context. More formally, if `r = Result(v, x)`, then
+      * `r.andDiscard(f)` is equal to `Result(v)(using f(using x))`.
+     */
+    def andDiscard[U](after: Context ?=> Result[U]): Result[T] =
+      new Result(stack, after(using context).context)
+
+    /** Returns `stack` along with the result of applying `after` on the contents of `this`. */
+    def andCombine[U](after: Context ?=> Result[U]): Result[(T, U)] =
+      and((a) => after.map((b) => (a, b)))
 
   object Result:
 
@@ -123,8 +157,8 @@ object Parser:
               case (Syntax(n: TermTree.Variable, s), Some(c)) =>
                 // `parameterOrTerm` is actually a parameter declaration.
                 typ3(using c.context)
-                  .and((a) => take(Token.rightParenthesis, "')'").map((_) => a))
-                  .and((a) => take(Token.thickArrow, "'=>'").map((_) => a))
+                  .andDiscard(take(Token.rightParenthesis, "')'"))
+                  .andDiscard(take(Token.thickArrow, "'=>'"))
                   .and((a) => term.map { (b) =>
                     Syntax(TermTree.TermAbstraction(Syntax(n, s), a, b), s.extendedToCover(b.span))
                   })

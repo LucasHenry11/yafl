@@ -42,6 +42,7 @@ boolean-literal ::=
 
 term-abstraction ::=
   | '(' identifier ':' type (',' identifier ':' type)* ')' '=>' term
+  | 'fix' identifier ':' type '=' term
 
 term-application ::=
   | term term

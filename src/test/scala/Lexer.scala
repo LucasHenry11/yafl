@@ -27,10 +27,10 @@ final class LexerTests extends munit.FunSuite:
     assert(found.sameElements(expected))
 
   test("keywords"):
-    val input = SourceFile("test", "fun let if _abc then true else false")
+    val input = SourceFile("test", "fix let if _abc then true else false")
     val found = tokens(input).map((t) => t.tag)
     val expected = IArray(
-      Token.fun,
+      Token.fix,
       Token.let,
       Token.`if`,
       Token.identifier,

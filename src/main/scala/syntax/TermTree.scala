@@ -46,4 +46,9 @@ object TermTree:
       condition: Syntax[TermTree], success: Syntax[TermTree], failure: Syntax[TermTree]
   ) extends TermTree
 
+  /** A recursive term abstraction. */
+  case class RecursiveAbstraction(
+      name: Syntax[TermTree.Variable], ascription: Syntax[TypeTree], definition: Syntax[TermTree]
+  ) extends TermTree
+
 end TermTree

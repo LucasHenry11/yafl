@@ -46,7 +46,7 @@ object Token:
   val `if`              : Tag = 0x05
   val `then`            : Tag = 0x06
   val `else`            : Tag = 0x07
-  val fun               : Tag = 0x08
+  val fix               : Tag = 0x08
   val let               : Tag = 0x09
   val equal             : Tag = 0x0a
   val operator          : Tag = 0x0b
@@ -55,11 +55,10 @@ object Token:
   val dot               : Tag = 0x0e
   val comma             : Tag = 0x0f
   val colon             : Tag = 0x10
-  val bang              : Tag = 0x11
-  val leftBracket       : Tag = 0x12
-  val rightBracket      : Tag = 0x13
-  val leftParenthesis   : Tag = 0x14
-  val rightParenthesis  : Tag = 0x15
+  val leftBracket       : Tag = 0x11
+  val rightBracket      : Tag = 0x12
+  val leftParenthesis   : Tag = 0x13
+  val rightParenthesis  : Tag = 0x14
 
   /** Returns a closure that accepts a token and returns `true` iff that token has tag `k`. */
   def hasTag(k: Tag): Token => Boolean =

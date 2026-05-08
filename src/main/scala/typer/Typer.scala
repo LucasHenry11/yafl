@@ -64,9 +64,10 @@ object Typer:
       tree: Syntax[TermTree], gamma: Environment
   )(using Context): Result[Type] = {
     val found: Result[Type] = tree.value match {
-      case e: TermTree.Variable => gamma.typeOf(e) match
-        case Some(t) => result(t)
-        case _ => throw Diagnostic.undefinedSymbol(e.name, tree.span)
+      case e: TermTree.Variable =>
+        gamma.typeOf(e) match
+          case Some(t) => result(t)
+          case _ => throw Diagnostic.undefinedSymbol(e.name, tree.span)
 
       case TermTree.UnitLiteral =>
         result(Type.Ground.Unit)
@@ -115,6 +116,15 @@ object Typer:
           case u =>
             throw Diagnostic.typeMismatch(u, Type.Ground.Bool, e.condition.span)
         }
+
+      case e: TermTree.RecursiveAbstraction =>
+        typeOf(e.ascription, gamma) match
+          case t: Type.Arrow =>
+            typeOf(e.definition, gamma.introducing(e.name.value, t)).map { (u) =>
+              if t == u then t else throw Diagnostic.typeMismatch(u, t, e.definition.span)
+            }
+          case t =>
+            throw Diagnostic(s"expected arrow type, found '${t}'", e.ascription.span)
     }
 
     result(found.value)(using found.state.updated(tree, found.value))

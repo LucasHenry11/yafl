@@ -91,7 +91,7 @@ extension (source: SourceFile)
       case "if" => Token.`if`
       case "then" => Token.`then`
       case "else" => Token.`else`
-      case "fun" => Token.fun
+      case "fix" => Token.fix
       case "let" => Token.let
       case _ => Token.identifier
     Token(tag, SourceSpan(start, end, source))

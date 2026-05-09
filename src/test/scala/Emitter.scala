@@ -17,6 +17,13 @@ final class EmitterTests extends munit.FunSuite:
     writeArguments(wasm, IArray(31, 11))
     assertEquals(main.apply()(0), 2L)
 
+  test("argv"):
+    val input = SourceFile("test", "(#argv 0) + (#argv 1)")
+    val wasm = compile(input)
+    val main = wasm.`export`("main")
+    writeArguments(wasm, IArray(40, 2))
+    assertEquals(main.apply()(0), 42L)
+
   test("integer addition"):
     val input = SourceFile("test", "40 + 2")
     val main = compile(input).`export`("main")
@@ -33,7 +40,6 @@ final class EmitterTests extends munit.FunSuite:
   private def writeArguments(wasm: chicory.runtime.Instance, values: IArray[Int]): Unit =
     val m = wasm.memory()
     m.writeI32(0, values.length)
-    def loop(i: Int): Unit =
-      if i >= values.length then () else m.writeI32(4 + (i * 4), values(i))
+    for i <- 0 until values.length do m.writeI32(4 + (i * 4), values(i))
 
 end EmitterTests

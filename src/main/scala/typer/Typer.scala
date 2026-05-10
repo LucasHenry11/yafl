@@ -49,6 +49,21 @@ object Typer:
         "infix-" -> G.Int.to(G.Int.to(G.Int)),
         "infix*" -> G.Int.to(G.Int.to(G.Int)),
         "infix/" -> G.Int.to(G.Int.to(G.Int)),
+        "prefix+" -> G.Int.to(G.Int),
+        "prefix-" -> G.Int.to(G.Int),
+
+        // Integer comparison.
+        "infix==" -> G.Int.to(G.Int.to(G.Bool)),
+        "infix!=" -> G.Int.to(G.Int.to(G.Bool)),
+        "infix<" -> G.Int.to(G.Int.to(G.Bool)),
+        "infix<=" -> G.Int.to(G.Int.to(G.Bool)),
+        "infix>" -> G.Int.to(G.Int.to(G.Bool)),
+        "infix>=" -> G.Int.to(G.Int.to(G.Bool)),
+
+        // Boolean operations.
+        "infix&&" -> G.Bool.to(G.Bool.to(G.Bool)),
+        "infix||" -> G.Bool.to(G.Bool.to(G.Bool)),
+        "prefix!" -> G.Bool.to(G.Bool),
       )
       Environment(terms, List())
     }

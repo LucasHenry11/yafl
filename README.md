@@ -26,7 +26,7 @@ The compiler accepts the following options to control its output:
 
 - `-o` : Specifies the file in which the compiler writes its output.
   You may use `-o -` to have the compiler write its result to the standard output instead.
-- `--syntax` : Configures the compiler to only parses the input file.
+- `--syntax` : Configures the compiler to only parse the input file.
 - `--wat` : Configures the compiler to generate textual assembly.
 - `--wasm` : Configures the compiler to generate binary assembly (default).
 
@@ -55,8 +55,8 @@ let min = (x : Int) => (y : Int) => if y < x then y else x ;
 min 3 4
 ```
 
-Yafl also support generic definitions.
-For example, the following programm illustrates the application of the *polymorphic* identity:
+Yafl also supports generic definitions.
+For example, the following program illustrates the application of the *polymorphic* identity:
 
 ```yafl
 ([T] => (x : T) => x) [Int] 1
@@ -74,9 +74,9 @@ let factorial = fix loop : Int -> Int =
 factorial 6
 ```
 
-The execution environment of a Yafl program can setup a number of command-line arguments, provided in the form of an array of integers.
+The execution environment of a Yafl program can configure a number of command-line arguments, provided in the form of an array of integers.
 Two built-in constructs can be used from Yafl programs to interact with these arguments.
-The first, `#argc`, denotes the number of arguments available (i.e., the length of the array)
+The first, `#argc`, denotes the number of arguments available (i.e., the length of the array).
 The second, `#argv`, denotes a function returning the `i`-th argument.
 For example, the following program sums all command-line arguments.
 
@@ -93,7 +93,7 @@ The syntax of Yafl is described by the production rules below.
 The following is assumed:
 
 - Integer literals are contiguous sequences of digits (e.g., `123`); and
-- Identifers are strings of alphanumeric characters and the underscore, starting with a non-numeric character (e.g., `foo` or `_23`).
+- Identifiers are strings of alphanumeric characters and the underscore, starting with a non-numeric character (e.g., `foo` or `_23`).
 
 Whitespaces and comments (i.e., substrings prefixed by `//` and terminating at the next newline sequence) are simply ignored during lexing and are therefore irrelevant during parsing.
 

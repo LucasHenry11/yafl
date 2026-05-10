@@ -4,27 +4,31 @@ Your project consists of completing the implementation of Yafl provided in this 
 More specifically, you should modify and/or extend the current implementation so that it can pass all tests (i.e., those executed with `sbt test`).
 
 Yafl's compiler comprises four main stages: parser, typer, optimizer, emitter.
-The typing stage has been fully implemented; your work will focus on the tree others.
+The typing stage has been fully implemented; your work will focus on the three others.
 Most tasks related to the parser are considered *required* and must be done to complete your project.
 Other tasks are considered *optional* and can be skipped if necessary.
 Some optional tasks are also marked *hard* or *brutal* and are significantly more difficult to complete than others.
 
+A primary objective of this project is to train your ability to work within a purely functional paradigm.
+Hence, you are not allowed to use variables or mutable data structures to complete your tasks.
+You are also not allowed to import any additional dependencies.
+
 ## Evaluation
 
 Your work will be evaluated according to both functionality (i.e., the features that your compiler implements) and quality (i.e., the legibility and maintainability of your code).
-The result of this evaluation will lead either to either a bonus of at most 1 point or a malus of at most -1 point on your grade for the course.
+The result of this evaluation will lead to either a bonus of at most 1 point or a malus of at most -1 point on your grade for the course.
 
-Failure to complete required tasks will push in the negative direction whereas the completion of optional tasks will push in the positive direction.
-You must complete **all required tasks** and at least **five optional tasks** to obtain the full bonus.
-Completing an advanced or brutal task counts as much as completing two or three ordinary tasks, respectively.
+Failure to complete required tasks will push in the negative direction, whereas the completion of optional tasks will push in the positive direction.
+You must complete **all required tasks** and at least **six optional tasks** to obtain the full bonus.
+Completing an advanced or brutal task counts as much as completing two or three ordinary tasks, respectively
 
 ### About tests and correctness
 
-This project can be considered an example of [test-driven developments](https://en.wikipedia.org/wiki/Test-driven_development).
-You have been given a test suite describing requirements of some specification and your objective is to provide an implementation.
+This project can be considered an example of [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development).
+You have been given a test suite describing the requirements of some specification, and your objective is to provide an implementation.
 This setup is particularly convenient for modern code generation tools, as a coding assistant can often often iteratively refines an implementation until it passes all tests.
 
-Keep in mind that a test is not a correctness proof as your code may be used in ways that are not captured by the existing test suite.
+Keep in mind that a test is not a correctness proof, as your code may be used in ways that are not captured by the existing test suite.
 That is especially true for compilers, for which the domains of valid inputs are particularly large and complex.
 As a result, relying on just a few tests is not a good indicator of correctness.
 
@@ -49,29 +53,29 @@ Nonetheless, there are a few rules that can help:
    class Token
    ```
 
-   A better documentation would (briefly) explain what a token is, as it were a short description in a lexicon.
+   Better documentation would (briefly) explain what a token is, as though it were a short description in a lexicon.
 
-2. **Avoid abbreviations**
+2. **Avoid abbreviations.**
 
    Use full words in your code.
    For example, `TypeApplication` is clearer than `TApp`.
-   Abbreviations invite ambuiguity and/or increase cognitive overload.
+   Abbreviations invite ambiguity and/or increase cognitive overload.
 
-3. **Name things after their role**
+3. **Name things after their role.**
 
-   Use names as an opportunity to clarify the role of a entity.
+   Use names as an opportunity to clarify the role of an entity.
    For example, `input` is a better name than `sourceFile` to name the input file being compiled.
 
    If the role of a variable is obvious from the context, do not hesitate to use a single letter name, as concision reduces cognitive overload.
 
-4. **Do not repeat yourself**
+4. **Do not repeat yourself.**
 
-   Avoid boilerplate as it increases cognitive overload and impedes maintenability.
+   Avoid boilerplate as it increases cognitive overload and impedes maintainability.
    Whenever you write the same code twice, take a step back and think whether there might be an opportunity to create a meaningful abstraction.
 
-5. **Observe the the boy/girl scout rule**: leave the code cleaner that you found it.
+5. **Observe the boy/girl scout rule**: leave the code cleaner than you found it.
 
-   When you modifiy someone else's code, make sure to preserve or improve code quality by applying all the rules above to the code you are modifying.
+   When you modify someone else's code, make sure to preserve or improve code quality by applying all the rules above to the code you are modifying.
 
 ### About the use of LLMs
 
@@ -84,7 +88,7 @@ code or as footnotes after generated documentation).
 ## Parsing Tasks
 
 The `README.md` file of this repository documents the full grammar of Yafl, expressed in EBNF.
-The current implementation contains a lexer capable of recognizing the terminal-symbols of this grammar, along with an incomplete parser capable of recognizing a subset of Yafl.
+The current implementation contains a lexer capable of recognizing the terminal symbols of this grammar, along with an incomplete parser capable of recognizing a subset of Yafl.
 Your objective is to complete this implementation.
 
 Below are the tasks related to the parser.
@@ -92,30 +96,30 @@ It is recommended to implement them in order.
 All tasks have an associated test that you can use to exercise your implementation.
 
 > **Tip**: the entry point of the parser is the method `parse`, which parses a term.
-> Since other methods are private, there is no direct mean to test the parsing of a type expression.
+> Since other methods are private, there is no direct means to test the parsing of a type expression.
 > One simple way to work around this issue is to parse a term involving a type expression, such as a type application or a type abstraction.
 
 - [ ] **Conditionals and Bindings** (required)
 
   Conditionals and bindings are simple terms that are relatively easy to parse.
   Each construction is introduced with its own dedicated keyword (i.e., `if` and `let`, respectively) and has a fixed structure.
-  Consequently, it is straighforward for the parser to recognize the start of a construction.
+  Consequently, it is straightforward for the parser to recognize the start of a construction.
   You can take inspiration from the part of the parser that is handling the expression of a lambda to write your code.
 
 - [ ] **Type abstractions** (required)
 
   Type abstractions have the form `[T] => e`.
   Similarly to conditionals and bindings, they also start with a token (i.e., `[`) that cannot occur at the beginning of any other construction.
-  Consequently, it is again straighforward for the parser to recognize the start of a type abstraction.
+  Consequently, it is again straightforward for the parser to recognize the start of a type abstraction.
 
   Although the grammar specifies that more than one type parameter may be supplied, you can implement this step assuming that all type abstractions have exactly one parameter.
 
 - [ ] **Prefix terms** (required)
 
-  Prefix terms have the form `f e` where `f` is an operator, meaning that the occurrence of an operator at the start of a term signals the presence of a prefix term.
-  In other words, the parser can apply a similar stategy as the one used for simple terms, with two caveats.
+  Prefix terms have the form `f e`, where `f` is an operator, meaning that the occurrence of an operator at the start of a term signals the presence of a prefix term.
+  In other words, the parser can apply a similar strategy as the one used for simple terms, with two caveats.
   First, *any* operator can be recognized at the start rather than one specific token.
-  Second, a prefix term is not considered a simple term because it cannot occur at the right-hand-side of a term application, lest the expression `x + y` would become ambiguous.
+  Second, a prefix term is not considered a simple term because it cannot occur at the right-hand side of a term application, lest the expression `x + y` would become ambiguous.
 
 - [ ] **Universal types** (required)
 
@@ -129,7 +133,7 @@ All tasks have an associated test that you can use to exercise your implementati
   Arrow types have the form `T -> U`.
   Consequently, unlike the constructions mentioned above, the parser cannot simply use a single token to recognize the start of an arrow.
   However, notice that the occurrence of an arrow operator (i.e., `->`) following a type expression signals the presence of an arrow.
-  Further, since the operator is right-associative, the parser can simply recurse to recognize the type expression on the right-hand-side.
+  Further, since the operator is right-associative, the parser can simply recurse to recognize the type expression on the right-hand side.
 
 - [ ] **Parenthesized types** (required)
 
@@ -163,14 +167,14 @@ All tasks have an associated test that you can use to exercise your implementati
   That is because a lambda taking more parameters can be *desugared* into its curried form during parsing.
   In other words, `(x : Int, y : Int) => x + y` can be parsed as though it had been written `(x : Int) => (y : Int) => x + y` instead.
 
-  Likewise, type abstractions, type applications, and universal types, can use a similar desugaring.
+  Likewise, type abstractions, type applications, and universal types can use a similar desugaring.
   For example, `e [T, U]` can be parsed as though it had been written `e [T] [U]`.
 
-  Taking inspiration from the parsing of term abstractions, your task is to implement such this desugaring for type abstractions, type applications, and universal types.
+  Taking inspiration from the parsing of term abstractions, your task is to implement such desugaring for type abstractions, type applications, and universal types.
 
 ### About the structure of the implementation
 
-Note that the parser is not (and does not have to) perfectly mirrors the structure of the grammar.
+Note that the parser is not (and does not have to) perfectly mirror the structure of the grammar.
 For example, the grammar describes term applications with the following rule:
 
 ```
@@ -179,24 +183,24 @@ term-application ::=
 ```
 
 However, the parser handles term applications in the method `lambdaOrParenthesized`, which also recognizes parenthesized terms.
-This particular arrangement is done to avoid backtracking, by avoiding committing too early.
-The takeaway is that you should also apply your best judgement to deviate from the structure of the grammar in your parser whenever appropriate.
+This particular arrangement is done to avoid backtracking by avoiding committing too early.
+The takeaway is that you should also apply your best judgment to deviate from the structure of the grammar in your parser whenever appropriate.
 
 ## Optimization Tasks
 
 The optimizer runs on typed programs by rewriting particular patterns found in the syntax trees.
 For example, [constant folding](https://en.wikipedia.org/wiki/Constant_folding) is a common optimization that consists of replacing constant expressions (e.g., `3 + 1`) by their values at compile-time (e.g., `4`).
-Note that an optimization does not necessarily results in a shorter term, only a term that is (at least in principle) faster to evaluate at run-time.
+Note that an optimization does not necessarily result in a shorter term, only a term that is (at least in principle) faster to evaluate at run-time.
 
 Incidentally, an optimization can also result in terms that are simpler to compile.
-For example, `((x : Int) => x + x) y` could be rewritten as simply `y + y` , which is not only faster to execute (one less function call) but no longer involves an anonymous function, which would be rather difficult to compile.
+For example, `((x : Int) => x + x) y` could be rewritten as simply `y + y` , which is not only faster to execute (one less function call) but also no longer involves an anonymous function, which would be rather difficult to compile.
 
 Also note that applying a particular optimization may enable another optimization.
-For example, applying constant propagation (see below) before constang folding makes it possible for the compiler to replace `let x = 2 ; x + 2 * (x * x)` with just `10`.
+For example, applying constant propagation (see below) before constant folding makes it possible for the compiler to replace `let x = 2 ; x + 2 * (x * x)` with just `10`.
 Hence, it may be necessary to apply optimizations until some fixed point is reached to obtain the best possible result.
 
 Below are the tasks related to the optimizer.
-These can be implemented in any order but note that normalization may help dramatically reduce the number of cases to consider in other optimizations.
+These can be implemented in any order, but note that normalization may help dramatically reduce the number of cases to consider in other optimizations.
 Most available tests may require the application of more than one optimization to pass.
 Further, all tests rely on the parser behaving correctly.
 
@@ -207,12 +211,12 @@ Further, all tests rely on the parser behaving correctly.
   However, it is convenient for a compiler if equivalent terms have equivalent syntax.
   While this property cannot be guaranteed in general, there are a few simple transformations one can apply to *normalize* the shape of a term.
 
-  For this task, your goal is to transfrom programs so that:
+  For this task, your goal is to transform programs so that:
 
     1. Constants are on the left-most side of syntax trees.
 
        For example, the normal form of `1 + x + 2` is `1 + 2 + x`.
-       In the rewritten form, `x` has is on the right leaf of the tree whereas `2` is on the left one.
+       In the rewritten form, `x` is on the right leaf of the tree, whereas `2` is on the left one.
 
     2. Bindings are moved as close as possible to the root.
 
@@ -227,10 +231,10 @@ Further, all tests rely on the parser behaving correctly.
 - [ ] **Dead code elimination** (optional)
 
   [Dead code elimination](https://en.wikipedia.org/wiki/Dead-code_elimination) consists of removing unreachable code from the program.
-  For example, `if true then 1 else 2 * 3` and `let x = 2 ; a` can be both be rewritten `1`.
+  For example, both `if true then 1 else 2 * 3` and `let x = 2 ; a` can be rewritten `1`.
 
-  For this task, your goal is to eliminate conditionals whose condition is provaly `true` or `false` as well as bindings that have no use.
-  The examples above show an examples.
+  For this task, your goal is to eliminate conditionals whose condition is provably `true` or `false` as well as bindings that have no use.
+  The examples above illustrate.
 
 - [ ] **Constant propagation** (optional)
 
@@ -240,7 +244,7 @@ Further, all tests rely on the parser behaving correctly.
 - [ ] **Inlining** (optional)
 
   Inlining consists of applying functions at compile-time.
-  More formally, it is done by performing beta-reduction on term applications having an term abstraction for callee.
+  More formally, it is done by performing beta-reduction on term applications having a term abstraction for their callee.
   For example, `((x : Int) => x + x) y` can be rewritten `y + y`.
 
 - [ ] **Common subexpression elimination** (optional, hard)
@@ -267,7 +271,7 @@ Further, all tests rely on the parser behaving correctly.
   if 4 > 10 then 4 else if (4 * 4) > 10 then (4 * 4) else f (4 * (4 * 4)) ;
   ```
 
-  Remark that the call to the recursive function `f` will disappear if we perform constant folding and dead code elimination at this point, resulting in simply `16`.
+  Note that the call to the recursive function `f` will disappear if we perform constant folding and dead code elimination at this point, resulting in simply `16`.
 
 ## Code Generation Tasks
 
@@ -297,12 +301,21 @@ Most tests can only pass if you have also implemented part of the optimizer or i
   (i32.add)
   ```
 
-  Note that you
+  Note that local bindings must be declared at the root of a function.
+  Consequently, one must ensure that all local bindings in a function are declared upfront and get a different name.
+  For example, consider the following program, which is legal in Yafl:
+
+  ```yafl
+  let x = 1 ;
+  if x < 2 then let x = 2 ; x else x
+  ```
+
+  Once compiled in WebAssembly, the two bindings must be declared at the root of the function and be given different names.
 
 - [ ] **Monomorphiation** (optional, hard)
 
-  Yafl is am implementation of [System F](https://en.wikipedia.org/wiki/System_F), meaning that it supports parametric polymorphism.
-  For example, the following program is shows an application of the polymorphic identity:
+  Yafl is an implementation of [System F](https://en.wikipedia.org/wiki/System_F), meaning that it supports parametric polymorphism.
+  For example, the following program shows an application of the polymorphic identity:
 
   ```yafl
   let id = [T] => (x: T) => x ;
@@ -312,7 +325,7 @@ Most tests can only pass if you have also implemented part of the optimizer or i
   Low-level programming languages like WebAssembly typically do not feature parametric polymorphism.
   Consequently, one needs a mechanism to represent generic definitions with monomorphic constructions.
 
-  One simple strategy is [monomorphization](https://en.wikipedia.org/wiki/Monomorphization), which consists of rewriting a copy of generic in which generic type parameters have been replaced with their arguments.
+  One simple strategy is [monomorphization](https://en.wikipedia.org/wiki/Monomorphization), which consists of rewriting a copy in which generic type parameters have been replaced with their arguments.
   For example, the above program can be rewritten as follows:
 
   ```yafl
@@ -327,8 +340,8 @@ Most tests can only pass if you have also implemented part of the optimizer or i
   The current implementation does not handle first-class functions.
   For example, the following program cannot compile without inlining `((x : Int) => x) 1`.
 
-  First-class functions are difficult to implement in a low-level programming langage like WebAssembly because they require a mechanism to keep track of the function's environment.
-  To illustrage, consider the following program
+  First-class functions are difficult to implement in a low-level programming language like WebAssembly because they require a mechanism to keep track of the function's environment.
+  To illustrate, consider the following program
 
   ```yafl
   let plus_some = (i : Int) => (n : Int) => n + i ;
@@ -370,7 +383,7 @@ Follow these instructions to submit your work:
 1. Create a tag of your repository.
 2. Write a small report with a link to this tag and, for each task you have completed:
 
-   - the names of the persons having worked on the task
+   - the names of the persons who worked on the task
    - references to the relevant part of your implementation
 
-3. Submit this report on [isc.hevs.ch/learn](https://isc.hevs.ch/learn/) no later than Tuesday 26th May 23:59 (CEST).
+3. Submit this report on [isc.hevs.ch/learn](https://isc.hevs.ch/learn/) no later than Tuesday, 26th May 23:59 (CEST).

@@ -82,7 +82,20 @@ object Parser:
 
   /** Parses a simple term of the application of a prefix operator. */
   private def prefixTerm(using Context): Result[Syntax[TermTree]] =
-    typeApplication
+    peek match
+      // if next token is an operator, we parse it
+      case Some(token) if token.tag == Token.operator =>
+        take(Token.operator, "operator").and { op =>
+          // create the node
+          val prefixOp = Syntax(TermTree.Variable(s"prefix${op.text}"), op.span)
+
+          // recursive call to manage "+ - 1" for example
+          prefixTerm.map { operand =>
+            Syntax(TermTree.TermApplication(prefixOp, operand), op.span.extendedToCover(operand.span))
+          }
+        }
+      // if next token isn't operator we delegate to type application as before
+      case _ => typeApplication
 
   /** Parses a simple term or a type application. */
   private def typeApplication(using Context): Result[Syntax[TermTree]] =

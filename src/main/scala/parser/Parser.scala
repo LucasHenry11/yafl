@@ -96,6 +96,7 @@ object Parser:
       case Some(Token.identifier) => termIdentifier
       case Some(Token.leftParenthesis) => lambdaOrParenthesized
       case Some(Token.`if`) => conditional
+      case Some(Token.leftBracket) => abstractTypes
       case _ => throw expected("term")
 
   /** Parses a Boolean literal. */
@@ -120,27 +121,53 @@ object Parser:
 
   /** Parses conditionnal statements */
   private def conditional(using Context): Result[Syntax[TermTree.Conditional]] = {
-        take(Token.`if`, "if").and { opener =>
-            term.and { condition =>
-                take(Token.`then`, "then").and { _ =>
-                    term.and { success =>
-                        take(Token.`else`, "else").and { _ =>
-                            term.map { failure =>
-                                Syntax(
-                                    TermTree.Conditional(
-                                        condition,
-                                        success,
-                                        failure
-                                    ),
-                                    opener.span.extendedToCover(failure.span)
-                                )
-                            }
+    take(Token.`if`, "if").and { opener =>
+        term.and { condition =>
+            take(Token.`then`, "then").and { _ =>
+                term.and { success =>
+                    take(Token.`else`, "else").and { _ =>
+                        term.map { failure =>
+                            Syntax(
+                                TermTree.Conditional(
+                                    condition,
+                                    success,
+                                    failure
+                                ),
+                                opener.span.extendedToCover(failure.span)
+                            )
                         }
                     }
                 }
             }
         }
     }
+  }
+
+  private def abstractTypes(using Context): Result[Syntax[TermTree.TypeAbstraction]] = {
+    take(Token.leftBracket, "[").and { opener =>
+      typeIdentifier.and{ t =>
+        take(Token.rightBracket, "]").and { _ => 
+          take(Token.thickArrow, "=>").and { _ =>
+            termIdentifier.map{ v =>
+                Syntax(
+                  TermTree.TypeAbstraction(
+                    t,
+                    v
+                  ),
+                  opener.span.extendedToCover(v.span)
+                )
+              }
+
+          }
+
+          }
+
+      }
+
+    }
+  
+  
+  }
 
   /** Parses a lambda or a parenthesized term. */
   private def lambdaOrParenthesized(using Context): Result[Syntax[TermTree]] =

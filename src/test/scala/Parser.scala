@@ -45,7 +45,7 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(y.value, TermTree.Variable("prefix+"))
         assertEquals(z.value, TermTree.IntegerLiteral(1))
 
-  test("term abstraction"):
+  test("term_abstraction"):
     import TermTree.TermAbstraction as A
     (parse("(x : A) => x") : @unchecked) match
       case Syntax(A(x, t, b), _) =>
@@ -53,21 +53,21 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(t.value, TypeTree.Variable("A"))
         assertEquals(b.value, TermTree.Variable("x"))
 
-  test("term application"):
+  test("term_application"):
     import TermTree.TermApplication as A
     (parse("x y") : @unchecked) match
       case Syntax(A(x, y), _) =>
         assertEquals(x.value, TermTree.Variable("x"))
         assertEquals(y.value, TermTree.Variable("y"))
 
-  test("type abstraction"):
+  test("type_abstraction"):
     import TermTree.TypeAbstraction as A
     (parse("[A] => x") : @unchecked) match
       case Syntax(A(a, x), _) =>
         assertEquals(a.value.name, "A")
         assertEquals(x.value, TermTree.Variable("x"))
 
-  test("type application"):
+  test("type_application"):
     import TermTree.TypeApplication as A
     (parse("x y [A] [B]") : @unchecked) match
       case Syntax(TermTree.TermApplication(x, Syntax(A(Syntax(A(y, a) ,_), b), _)), _) =>
@@ -76,14 +76,14 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(a.value, TypeTree.Variable("A"))
         assertEquals(b.value, TypeTree.Variable("B"))
 
-  test("recursive abstraction"):
+  test("recursive_abstraction"):
     (parse("fix f : A -> A = b") : @unchecked) match
       case Syntax(TermTree.RecursiveAbstraction(f, t, b), _) =>
         assertEquals(f.value.name, "f")
         assertEquals(b.value, TermTree.Variable("b"))
         assert(t.value.isInstanceOf[TypeTree.Arrow])
 
-  test("ill-formed recursive abstraction"):
+  test("ill-formed_recursive_abstraction"):
     interceptMessage("expected ':'")(parse("fix f = b"))
     interceptMessage("expected '='")(parse("fix f : T b"))
 
@@ -94,11 +94,11 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(y.value, TermTree.Variable("y"))
         assertEquals(z.value, TermTree.Variable("z"))
 
-  test("ill-formed conditional"):
+  test("ill-formed_conditional"):
     interceptMessage("expected 'then'")(parse("if a"))
     interceptMessage("expected 'else'")(parse("if a then b"))
 
-  test("parenthesized term"):
+  test("parenthesized_term"):
     (parse("(((x)))") : @unchecked) match
       case Syntax(x, _) =>
         assertEquals(x, TermTree.Variable("x"))
@@ -110,7 +110,7 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(y.value, TermTree.Variable("y"))
         assertEquals(z.value, TermTree.Variable("z"))
 
-  test("ill-formed binding"):
+  test("ill-formed_binding"):
     interceptMessage("expected '='")(parse("let x"))
     interceptMessage("expected ';'")(parse("let x = y"))
 
@@ -122,14 +122,14 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(b.value, TypeTree.Variable("B"))
         assertEquals(c.value, TypeTree.Variable("C"))
 
-  test("universal type"):
+  test("universal_type"):
     import TypeTree.ForAll as F
     (parse("x [[A] => B]") : @unchecked) match
       case Syntax(TermTree.TypeApplication(_, Syntax(F(a, b), _)), _) =>
         assertEquals(a.value.name, "A")
         assertEquals(b.value, TypeTree.Variable("B"))
 
-  test("parenthesized type"):
+  test("parenthesized_type"):
     import TypeTree.Arrow as A
     (parse("x [(A -> B) -> C]") : @unchecked) match
       case Syntax(TermTree.TypeApplication(_, Syntax(A(Syntax(A(a, b), _), c), _)), _) =>
@@ -137,7 +137,7 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(b.value, TypeTree.Variable("B"))
         assertEquals(c.value, TypeTree.Variable("C"))
 
-  test("multiple term parameters"):
+  test("multiple term_parameters"):
     import TermTree.TermAbstraction as A
     (parse("(x : A, y : B, z : C) => 0") : @unchecked) match
       case Syntax(A(x, a, Syntax(A(y, b, Syntax(A(z, c, _), _)), _)), _) =>
@@ -148,7 +148,7 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(z.value.name, "z")
         assertEquals(c.value, TypeTree.Variable("C"))
 
-  test("multiple type parameters"):
+  test("multiple_type_parameters"):
     import TermTree.TypeAbstraction as A
     (parse("[A, B, C] => x") : @unchecked) match
       case Syntax(A(a, Syntax(A(b, Syntax(A(c, x), _)), _)), _) =>
@@ -157,7 +157,7 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(c.value.name, "C")
         assertEquals(x.value, TermTree.Variable("x"))
 
-  test("multiple type arguments"):
+  test("multiple_type_arguments"):
     import TermTree.TypeApplication as A
     (parse("x [A, B]") : @unchecked) match
       case Syntax(A(Syntax(A(x, a), _), b), _) =>
@@ -165,7 +165,7 @@ final class ParserTests extends munit.FunSuite:
         assertEquals(a.value, TypeTree.Variable("A"))
         assertEquals(b.value, TypeTree.Variable("B"))
 
-  test("multiple type variables"):
+  test("multiple_type_variables"):
     import TypeTree.ForAll as F
     (parse("x [[A, B] => C]") : @unchecked) match
       case Syntax(TermTree.TypeApplication(_, t), _) =>
@@ -175,17 +175,17 @@ final class ParserTests extends munit.FunSuite:
             assertEquals(b.value.name, "B")
             assertEquals(c.value, TypeTree.Variable("C"))
 
-  test("missing parentheses"):
+  test("missing_parentheses"):
     interceptMessage("expected ')'")(parse("(x"))
     interceptMessage("expected ')'")(parse("(x : a => x"))
     interceptMessage("expected ')'")(parse("x [(a]"))
 
-  test("missing brackets"):
+  test("missing_brackets"):
     interceptMessage("expected ']'")(parse("[a => x"))
     interceptMessage("expected ']'")(parse("x [a"))
     interceptMessage("expected ']'")(parse("x [[a => a]"))
 
-  test("missing arrows"):
+  test("missing_arrows"):
     interceptMessage("expected '=>'")(parse("(x : a) x"))
     interceptMessage("expected '=>'")(parse("[a] x"))
     interceptMessage("expected '=>'")(parse("x [[a] a]"))

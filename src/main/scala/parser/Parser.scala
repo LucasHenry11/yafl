@@ -95,6 +95,7 @@ object Parser:
       case Some(Token.integer) => integerLiteral
       case Some(Token.identifier) => termIdentifier
       case Some(Token.leftParenthesis) => lambdaOrParenthesized
+      case Some(Token.`if`) => conditional
       case _ => throw expected("term")
 
   /** Parses a Boolean literal. */
@@ -116,6 +117,30 @@ object Parser:
   private def infixOperator(using Context): Result[Syntax[TermTree.Variable]] =
     take(Token.operator, "operator")
       .map((n) => Syntax(TermTree.Variable(s"infix${n.text}"), n.span))
+
+  /** Parses conditionnal statements */
+  private def conditional(using Context): Result[Syntax[TermTree.Conditional]] = {
+        take(Token.`if`, "if").and { opener =>
+            term.and { condition =>
+                take(Token.`then`, "then").and { _ =>
+                    term.and { success =>
+                        take(Token.`else`, "else").and { _ =>
+                            term.map { failure =>
+                                Syntax(
+                                    TermTree.Conditional(
+                                        condition,
+                                        success,
+                                        failure
+                                    ),
+                                    opener.span.extendedToCover(failure.span)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
   /** Parses a lambda or a parenthesized term. */
   private def lambdaOrParenthesized(using Context): Result[Syntax[TermTree]] =

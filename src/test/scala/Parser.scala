@@ -69,12 +69,36 @@ final class ParserTests extends munit.FunSuite:
 
   test("type_application"):
     import TermTree.TypeApplication as A
-    (parse("x y [A] [B]") : @unchecked) match
+    (parse("x [A] [B]") : @unchecked) match
       case Syntax(TermTree.TermApplication(x, Syntax(A(Syntax(A(y, a) ,_), b), _)), _) =>
         assertEquals(x.value, TermTree.Variable("x"))
         assertEquals(y.value, TermTree.Variable("y"))
         assertEquals(a.value, TypeTree.Variable("A"))
         assertEquals(b.value, TypeTree.Variable("B"))
+
+  test("type_application_3"):
+    import TermTree.TypeApplication as A
+
+    (parse("x y z [A] [B] [C]"): @unchecked) match
+      case Syntax(
+        TermTree.TermApplication(
+          x,
+          Syntax(
+            TermTree.TermApplication(
+              y,
+              Syntax(A(Syntax(A(Syntax(A(z, a), _), b), _), c), _)
+            ),
+            _
+          )
+        ),
+        _
+      ) =>
+        assertEquals(x.value, TermTree.Variable("x"))
+        assertEquals(y.value, TermTree.Variable("y"))
+        assertEquals(z.value, TermTree.Variable("z"))
+        assertEquals(a.value, TypeTree.Variable("A"))
+        assertEquals(b.value, TypeTree.Variable("B"))
+        assertEquals(c.value, TypeTree.Variable("C"))
 
   test("recursive_abstraction"):
     (parse("fix f : A -> A = b") : @unchecked) match

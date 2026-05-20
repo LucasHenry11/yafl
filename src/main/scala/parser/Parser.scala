@@ -68,8 +68,9 @@ object Parser:
 
       case Some(t) if !t.isDelimiter =>
         // The next token isn't an operator so we'll treat it as the start of a term occurring as
-        // the argument of some application.
-        typeApplication.map { (rhs) =>
+        // the argument of some application. We recurse on `termApplication` so that chains like
+        // `x y z` are parsed right-associatively as `x (y z)`.
+        termApplication(precedence).map { (rhs) =>
           Syntax(TermTree.TermApplication(lhs, rhs), lhs.span.extendedToCover(rhs.span))
         }
 
@@ -97,9 +98,36 @@ object Parser:
       // if next token isn't operator we delegate to type application as before
       case _ => typeApplication
 
-  /** Parses a simple term or a type application. */
+  /** Parses a simple term, possibly followed by one or more type arguments. */
   private def typeApplication(using Context): Result[Syntax[TermTree]] =
-    simpleTerm
+    simpleTerm.and(type_args)
+
+  /** Parses sequence of type arguments applied to `callee`. */
+  private def type_args(callee: Syntax[TermTree])(using Context): Result[Syntax[TermTree]] = {
+    takeIf(Token.hasTag(Token.leftBracket)) match
+      case Some(opener) =>
+        opener.and { _ =>
+          commaSeparatedTypes(callee).and { node =>
+            take(Token.rightBracket, "]").and { closer =>
+              val withCloser = Syntax(node.value, callee.span.extendedToCover(closer.span))
+              type_args(withCloser)
+            }
+          }
+        }
+      case _ => result(callee)
+  }
+
+  /** Parses one or more comma-separated type arguments and applies them left-to-right to `callee`. */
+  private def commaSeparatedTypes(callee: Syntax[TermTree])(using Context): Result[Syntax[TermTree]] =
+    typ3.and { argument =>
+      val node = Syntax(
+        TermTree.TypeApplication(callee, argument),
+        callee.span.extendedToCover(argument.span)
+      )
+      takeIf(Token.hasTag(Token.comma)) match
+        case Some(comma) => comma.and { _ => commaSeparatedTypes(node) }
+        case _ => result(node)
+    }
 
   /** Parses a simple term. */
   private def simpleTerm(using Context): Result[Syntax[TermTree]] =
@@ -178,28 +206,27 @@ object Parser:
 
   private def abstractTypes(using Context): Result[Syntax[TermTree.TypeAbstraction]] = {
     take(Token.leftBracket, "[").and { opener =>
-      typeIdentifier.and{ t =>
-        take(Token.rightBracket, "]").and { _ => 
+      typeIdentifier.and { t =>
+        take(Token.rightBracket, "]").and { _ =>
           take(Token.thickArrow, "=>").and { _ =>
-            termIdentifier.map{ v =>
-                Syntax(
-                  TermTree.TypeAbstraction(
-                    t,
-                    v
-                  ),
-                  opener.span.extendedToCover(v.span)
-                )
-              }
+            termIdentifier.map { v =>
+              Syntax(
+                TermTree.TypeAbstraction(
+                  t,
+                  v
+                ),
+                opener.span.extendedToCover(v.span)
+              )
+            }
 
           }
 
-          }
+        }
 
       }
 
     }
-  
-  
+
   }
 
   /** Parses a lambda or a parenthesized term. */

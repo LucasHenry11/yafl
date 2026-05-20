@@ -6,10 +6,10 @@ import yafl.syntax.{Syntax, TermTree, TypeTree}
 object Parser:
 
   /** The context in which parsing is taking place.
-    *
-    * @param source The source file being parsed.
-    * @param position The position of the parser in the source file.
-    */
+   *
+   * @param source   The source file being parsed.
+   * @param position The position of the parser in the source file.
+   */
   case class Context(source: SourceFile, position: SourceFile.Index):
 
     /** Returns a copy of `this` advanced to the position immediately after `t`. */
@@ -19,11 +19,11 @@ object Parser:
   end Context
 
   /** The result of a parsing method.
-    *
-    * A result is essentially a pair composed of a value, typically parsed from the input source,
-    * and a context denoting the state of the parser. The latter can be understood as the "state"
-    * of the parser, which is meant to flow into parsing methods.
-    */
+   *
+   * A result is essentially a pair composed of a value, typically parsed from the input source,
+   * and a context denoting the state of the parser. The latter can be understood as the "state"
+   * of the parser, which is meant to flow into parsing methods.
+   */
   type Result[+T] = yafl.Result[T, Context]
 
   /** Parses the program written in `source`. */
@@ -38,9 +38,9 @@ object Parser:
     termApplication(0)
 
   /** Parses a simple term or an application.
-    *
-    * @param precedence The minimum precedence level of the operators way may considerate.
-    */
+   *
+   * @param precedence The minimum precedence level of the operators way may considerate.
+   */
   private def termApplication(precedence: Int)(using Context): Result[Syntax[TermTree]] = {
     // The following loop implements precedence climbing. At each iteration, we look for an infix
     // operator `f` after `lhs` whose precedence is not stronger than the current precedence level.
@@ -96,6 +96,7 @@ object Parser:
       case Some(Token.identifier) => termIdentifier
       case Some(Token.leftParenthesis) => lambdaOrParenthesized
       case Some(Token.`if`) => conditional
+      case Some(Token.let) => binding
       case _ => throw expected("term")
 
   /** Parses a Boolean literal. */
@@ -120,26 +121,45 @@ object Parser:
 
   /** Parses conditionnal statements */
   private def conditional(using Context): Result[Syntax[TermTree.Conditional]] = {
-        take(Token.`if`, "if").and { opener =>
-            term.and { condition =>
-                take(Token.`then`, "then").and { _ =>
-                    term.and { success =>
-                        take(Token.`else`, "else").and { _ =>
-                            term.map { failure =>
-                                Syntax(
-                                    TermTree.Conditional(
-                                        condition,
-                                        success,
-                                        failure
-                                    ),
-                                    opener.span.extendedToCover(failure.span)
-                                )
-                            }
-                        }
-                    }
-                }
+    take(Token.`if`, "if").and { opener =>
+      term.and { condition =>
+        take(Token.`then`, "then").and { _ =>
+          term.and { success =>
+            take(Token.`else`, "else").and { _ =>
+              term.map { failure =>
+                Syntax(
+                  TermTree.Conditional(
+                    condition,
+                    success,
+                    failure
+                  ),
+                  opener.span.extendedToCover(failure.span)
+                )
+              }
             }
+          }
         }
+      }
+    }
+  }
+
+  /** Parses binding statements */
+  private def binding(using Context): Result[Syntax[TermTree.Binding]] =
+    take(Token.let, "let").and { opener =>
+      termIdentifier.and { name =>
+        take(Token.equal, "=").and { _ =>
+          term.and { initializer =>
+            take(Token.semicolon, ";").and { _ =>
+              term.map { body =>
+                Syntax(
+                  TermTree.Binding(name, initializer, body),
+                  opener.span.extendedToCover(body.span)
+                )
+              }
+            }
+          }
+        }
+      }
     }
 
   /** Parses a lambda or a parenthesized term. */
@@ -184,8 +204,8 @@ object Parser:
 
   /** Parses a (possibly empty) list of parameters, each prefixed by a leading comma. */
   private def trailingTermParameters(
-      ps: List[Parameter]
-  )(using Context): Result[List[Parameter]] =
+                                      ps: List[Parameter]
+                                    )(using Context): Result[List[Parameter]] =
     takeIf(Token.hasTag(Token.comma)) match
       case Some(separator) =>
         termIdentifier(using separator.state)

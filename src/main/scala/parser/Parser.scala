@@ -120,7 +120,7 @@ object Parser:
     take(Token.operator, "operator")
       .map((n) => Syntax(TermTree.Variable(s"infix${n.text}"), n.span))
 
-  /** Parses conditionnal statements */
+  /** Parses conditional statements */
   private def conditional(using Context): Result[Syntax[TermTree.Conditional]] = {
     take(Token.`if`, "if").and { opener =>
       term.and { condition =>

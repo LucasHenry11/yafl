@@ -69,7 +69,7 @@ final class ParserTests extends munit.FunSuite:
 
   test("type_application"):
     import TermTree.TypeApplication as A
-    (parse("x [A] [B]") : @unchecked) match
+    (parse("x y [A] [B]") : @unchecked) match
       case Syntax(TermTree.TermApplication(x, Syntax(A(Syntax(A(y, a) ,_), b), _)), _) =>
         assertEquals(x.value, TermTree.Variable("x"))
         assertEquals(y.value, TermTree.Variable("y"))

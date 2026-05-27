@@ -121,21 +121,21 @@ All tasks have an associated test that you can use to exercise your implementati
   First, *any* operator can be recognized at the start rather than one specific token.
   Second, a prefix term is not considered a simple term because it cannot occur at the right-hand side of a term application, lest the expression `x + y` would become ambiguous.
 
-- [ ] **Universal types** (required)
+- [x] **Universal types** (required)
 
   Universal types (aka *forall*) have almost the same form as type abstractions but can only occur in type positions.
   In other words, the occurrence of an opening left brace can be interpreted as either a type abstraction or a universal type depending on the production rule being applied.
 
   Like for type abstractions, although the grammar specifies that a universal type may be introduced with more than one type variable, you can implement this step assuming that there is exactly one.
 
-- [ ] **Arrow types** (required)
+- [X] **Arrow types** (required)
 
   Arrow types have the form `T -> U`.
   Consequently, unlike the constructions mentioned above, the parser cannot simply use a single token to recognize the start of an arrow.
   However, notice that the occurrence of an arrow operator (i.e., `->`) following a type expression signals the presence of an arrow.
   Further, since the operator is right-associative, the parser can simply recurse to recognize the type expression on the right-hand side.
 
-- [x] **Parenthesized types** (required)
+- [ ] **Parenthesized types** (required)
 
   Just like term expressions, type expressions can be written in parentheses to override default precedence or simply to improve legibility.
   For example, the type expression `T -> U -> V` does not denote the same type as `(T -> U) -> V`.

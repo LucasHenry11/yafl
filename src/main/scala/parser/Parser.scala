@@ -99,8 +99,8 @@ object Parser:
       case _ => typeApplication
 
   /** Parses a simple term, possibly followed by one or more type arguments. */
-  private def typeApplication(using Context): Result[Syntax[TermTree]] =
-    simpleTerm.and(type_args)
+  private def typeApplication(using Context): Result[Syntax[TermTree]] = 
+     simpleTerm.and(type_args)
 
   /** Parses sequence of type arguments applied to `callee`. */
   private def type_args(callee: Syntax[TermTree])(using Context): Result[Syntax[TermTree]] = {
@@ -138,7 +138,8 @@ object Parser:
       case Some(Token.leftParenthesis) => lambdaOrParenthesized
       case Some(Token.`if`) => conditional
       case Some(Token.let) => binding
-      case Some(Token.leftBracket) => abstractTypes
+      case Some(Token.leftBracket) => typeAbstraction
+      case Some(Token.fix) => recursiveAbstraction
       case _ => throw expected("term")
 
   /** Parses a Boolean literal. */
@@ -204,7 +205,8 @@ object Parser:
       }
     }
 
-  private def abstractTypes(using Context): Result[Syntax[TermTree.TypeAbstraction]] = {
+  /** Parses type abstraction **/
+  private def typeAbstraction(using Context): Result[Syntax[TermTree.TypeAbstraction]] = {
     take(Token.leftBracket, "[").and { opener =>
       typeIdentifier.and { t =>
         take(Token.rightBracket, "]").and { _ =>
@@ -218,15 +220,30 @@ object Parser:
                 opener.span.extendedToCover(v.span)
               )
             }
-
           }
-
         }
-
       }
-
     }
+  }
 
+  /** Parses recursive abstraction : fix f : A -> A = b**/
+  private def recursiveAbstraction(using Context) : Result[Syntax[TermTree.RecursiveAbstraction]] = {
+    take(Token.fix, "fix").and { opener =>
+      termIdentifier.and { f_name => 
+        take(Token.colon, ":").and { _ =>
+          typ3.and { ascription => 
+            take(Token.equal, "=").and { _ =>
+              term.map { definition => 
+                Syntax(
+                  TermTree.RecursiveAbstraction(f_name, ascription, definition),
+                  opener.span.extendedToCover(definition.span)
+                )
+              }
+            }
+          }  
+        }
+      }
+    }
   }
 
   /** Parses a lambda or a parenthesized term. */
@@ -283,13 +300,40 @@ object Parser:
 
   /** Parses a type. */
   private def typ3(using Context): Result[Syntax[TypeTree]] =
-    simpleType
+    simpleType.and { lhs =>
+      peek.map((t) => t.tag) match
+        case Some(Token.thinArrow) =>
+          take(Token.thinArrow, "->").and { _ =>
+            typ3.map { rhs =>
+              Syntax(TypeTree.Arrow(lhs, rhs), lhs.span.extendedToCover(rhs.span))
+            }
+          }
+        case _ => result(lhs)
+    }
 
   /** Parses a simple type. */
   private def simpleType(using Context): Result[Syntax[TypeTree]] =
     peek.map((t) => t.tag) match
       case Some(Token.identifier) => typeIdentifier
+      case Some(Token.leftBracket) => universalType
       case _ => throw expected("type")
+
+  /** Parses a universal type (i.e., a `forall`) of the form `[A] => T`. */
+  private def universalType(using Context): Result[Syntax[TypeTree.ForAll]] =
+    take(Token.leftBracket, "[").and { opener =>
+      typeIdentifier.and { parameter =>
+        take(Token.rightBracket, "]").and { _ =>
+          take(Token.thickArrow, "=>").and { _ =>
+            typ3.map { body =>
+              Syntax(
+                TypeTree.ForAll(parameter, body),
+                opener.span.extendedToCover(body.span)
+              )
+            }
+          }
+        }
+      }
+    }
 
   /** Parses a type identifier. */
   private def typeIdentifier(using Context): Result[Syntax[TypeTree.Variable]] =
@@ -321,7 +365,7 @@ object Parser:
 
   /** Returns a parse error reporting that `s` was expected at `site`. */
   private def expected(s: String, site: SourceSpan): Diagnostic =
-    Diagnostic(s"expected ${s}", site)
+    Diagnostic(s"expected '${s}'", site)
 
   /** Returns a parse error reporting that `s` was expected at the current position. */
   private def expected(s: String)(using Context): Diagnostic =

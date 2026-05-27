@@ -45,7 +45,7 @@ object Optimizer:
         val n = f match
           case InfixOperator.Add => lhs + rhs
           case InfixOperator.Sub => lhs - rhs
-        Some(Syntax(TermTree.IntegerLiteral(lhs + rhs), tree.span))
+        Some(Syntax(TermTree.IntegerLiteral(n), tree.span))
       case _ => None
 
 end Optimizer

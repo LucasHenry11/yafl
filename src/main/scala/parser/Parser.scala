@@ -350,17 +350,27 @@ object Parser:
       }
     }
 
-  /** Parses a universal type (i.e., a `forall`) of the form `[A] => T`. */
+  /** Parses a universal type (i.e., a `forall`) of the form `[A, B, ...] => T`. */
   private def universalType(using Context): Result[Syntax[TypeTree.ForAll]] =
     take(Token.leftBracket, "[").and { opener =>
       typeIdentifier.and { parameter =>
-        take(Token.rightBracket, "]").and { _ =>
-          take(Token.thickArrow, "=>").and { _ =>
-            typ3.map { body =>
-              Syntax(
-                TypeTree.ForAll(parameter, body),
-                opener.span.extendedToCover(body.span)
-              )
+        trailingTypeParameters(List(parameter)).and { params => 
+          take(Token.rightBracket, "]").and { _ =>
+            take(Token.thickArrow, "=>").and { _ =>
+              typ3.map { body =>
+                // Similar to typeAbstraction -> need to parse all parameters.
+                val bs: Syntax[TypeTree] = params.tail.foldRight(body) { (p, b) =>
+                  Syntax(
+                    TypeTree.ForAll(p, b),
+                    p.span.extendedToCover(b.span)
+                  )
+
+                }
+                Syntax(
+                  TypeTree.ForAll(params.head, bs),
+                  opener.span.extendedToCover(body.span)
+                )
+              }
             }
           }
         }

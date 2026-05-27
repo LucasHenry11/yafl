@@ -268,8 +268,8 @@ object Parser:
                 // ascription, which may be followed by multiple parameters.
                 typ3(using c.state)
                   .and((t) => trailingTermParameters(List((Syntax(n, s), t))))
-                  .andDiscard(take(Token.rightParenthesis, "')'"))
-                  .andDiscard(take(Token.thickArrow, "'=>'"))
+                  .andDiscard(take(Token.rightParenthesis, ")"))
+                  .andDiscard(take(Token.thickArrow, "=>"))
                   .and((ps) => term.map { (body) =>
                     ps.foldLeft(body) { (b, p) =>
                       val (x, t) = p
@@ -279,7 +279,7 @@ object Parser:
 
               case _ =>
                 // `parameterOrTerm` is just a term; parse the closing parenthesis.
-                take(Token.rightParenthesis, "')'").map((_) => parameterOrTerm)
+                take(Token.rightParenthesis, ")").map((_) => parameterOrTerm)
           }
     }
 

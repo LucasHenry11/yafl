@@ -289,7 +289,25 @@ object Parser:
   private def simpleType(using Context): Result[Syntax[TypeTree]] =
     peek.map((t) => t.tag) match
       case Some(Token.identifier) => typeIdentifier
+      case Some(Token.leftBracket) => universalType
       case _ => throw expected("type")
+
+  /** Parses a universal type (i.e., a `forall`) of the form `[A] => T`. */
+  private def universalType(using Context): Result[Syntax[TypeTree.ForAll]] =
+    take(Token.leftBracket, "[").and { opener =>
+      typeIdentifier.and { parameter =>
+        take(Token.rightBracket, "]").and { _ =>
+          take(Token.thickArrow, "=>").and { _ =>
+            typ3.map { body =>
+              Syntax(
+                TypeTree.ForAll(parameter, body),
+                opener.span.extendedToCover(body.span)
+              )
+            }
+          }
+        }
+      }
+    }
 
   /** Parses a type identifier. */
   private def typeIdentifier(using Context): Result[Syntax[TypeTree.Variable]] =

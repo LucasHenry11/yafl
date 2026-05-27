@@ -135,7 +135,7 @@ All tasks have an associated test that you can use to exercise your implementati
   However, notice that the occurrence of an arrow operator (i.e., `->`) following a type expression signals the presence of an arrow.
   Further, since the operator is right-associative, the parser can simply recurse to recognize the type expression on the right-hand side.
 
-- [x] **Parenthesized types** (required)
+- [ ] **Parenthesized types** (required)
 
   Just like term expressions, type expressions can be written in parentheses to override default precedence or simply to improve legibility.
   For example, the type expression `T -> U -> V` does not denote the same type as `(T -> U) -> V`.
@@ -149,7 +149,7 @@ All tasks have an associated test that you can use to exercise your implementati
 
   Although the grammar specifies that more than one type argument may be supplied, you can implement this step assuming that all type applications have exactly one argument.
 
-- [x] **Recursive abstractions** (required)
+- [ ] **Recursive abstractions** (required)
 
   Recursive type abstractions have the form `fix x : T = f` where `x` is an identifier, `T` a type, and `f` an arbitrary term.
   Since the construction starts with a dedicated token, it can be recognized in the same way as other simple terms like bindings and conditionals.

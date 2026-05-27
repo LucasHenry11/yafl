@@ -128,14 +128,14 @@ All tasks have an associated test that you can use to exercise your implementati
 
   Like for type abstractions, although the grammar specifies that a universal type may be introduced with more than one type variable, you can implement this step assuming that there is exactly one.
 
-- [X] **Arrow types** (required)
+- [x] **Arrow types** (required)
 
   Arrow types have the form `T -> U`.
   Consequently, unlike the constructions mentioned above, the parser cannot simply use a single token to recognize the start of an arrow.
   However, notice that the occurrence of an arrow operator (i.e., `->`) following a type expression signals the presence of an arrow.
   Further, since the operator is right-associative, the parser can simply recurse to recognize the type expression on the right-hand side.
 
-- [ ] **Parenthesized types** (required)
+- [x] **Parenthesized types** (required)
 
   Just like term expressions, type expressions can be written in parentheses to override default precedence or simply to improve legibility.
   For example, the type expression `T -> U -> V` does not denote the same type as `(T -> U) -> V`.

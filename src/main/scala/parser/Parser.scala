@@ -316,7 +316,18 @@ object Parser:
     peek.map((t) => t.tag) match
       case Some(Token.identifier) => typeIdentifier
       case Some(Token.leftBracket) => universalType
+      case Some(Token.leftParenthesis) => parenthesizedType
       case _ => throw expected("type")
+
+  /** Parse parenthesized type */
+  private def parenthesizedType(using Context): Result[Syntax[TypeTree]] =
+    take(Token.leftParenthesis, "(").and { start =>
+      typ3.and{ typ =>
+        take(Token.rightParenthesis, ")").and { end =>
+          result(typ)
+        }
+      }
+    }
 
   /** Parses a universal type (i.e., a `forall`) of the form `[A] => T`. */
   private def universalType(using Context): Result[Syntax[TypeTree.ForAll]] =

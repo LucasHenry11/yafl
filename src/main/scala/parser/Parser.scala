@@ -209,22 +209,33 @@ object Parser:
   private def typeAbstraction(using Context): Result[Syntax[TermTree.TypeAbstraction]] = {
     take(Token.leftBracket, "[").and { opener =>
       typeIdentifier.and { t =>
-        take(Token.rightBracket, "]").and { _ =>
-          take(Token.thickArrow, "=>").and { _ =>
-            termIdentifier.map { v =>
-              Syntax(
-                TermTree.TypeAbstraction(
-                  t,
-                  v
-                ),
-                opener.span.extendedToCover(v.span)
-              )
+        // Retrieve zero, one or more parameters
+        trailingTypeParameters(List(t)).and {params => 
+          take(Token.rightBracket, "]").and { _ =>
+            take(Token.thickArrow, "=>").and { _ =>
+              term.map { body =>
+                // We can't simply return the Syntax tree created from the fold.
+                // foldright creates a list of TermTree and not TermTree.TypeAbstraction.
+                // Therefore, we first store it, and then construct the correct typed Syntax.
+                val bs: Syntax[TermTree] = params.tail.foldRight(body) { (p, b) =>
+                  Syntax(
+                    TermTree.TypeAbstraction(p, b),
+                    p.span.extendedToCover(b.span)
+                  )
+
+                }
+                Syntax(
+                  TermTree.TypeAbstraction(params.head, bs),
+                  opener.span.extendedToCover(body.span)
+                )
+              }
             }
           }
         }
       }
     }
   }
+    
 
   /** Parses recursive abstraction : fix f : A -> A = b**/
   private def recursiveAbstraction(using Context) : Result[Syntax[TermTree.RecursiveAbstraction]] = {
@@ -297,6 +308,16 @@ object Parser:
           .andCombine(typ3)
           .and(p => trailingTermParameters(p :: ps))
       case _ => result(ps)
+
+  /** Parses a (possibly empty) list of type parameters, each prefixed by a leading comma. **/
+  private def trailingTypeParameters(parsed_types: List[Syntax[TypeTree.Variable]])(using Context): Result[List[Syntax[TypeTree.Variable]]] =
+    takeIf(Token.hasTag(Token.comma)) match
+      case Some(comma) => comma.and { _ => 
+        typeIdentifier.and {p_type =>
+          trailingTypeParameters(p_type :: parsed_types)
+        }
+      }
+      case _ => result(parsed_types.reverse)
 
   /** Parses a type. */
   private def typ3(using Context): Result[Syntax[TypeTree]] =

@@ -1,5 +1,9 @@
 # Report - [Yafl](https://github.com/LucasHenry11/yafl)
 
+# Tag
+- [Link](https://github.com/LucasHenry11/yafl/releases/tag/v1.0.0)
+- Hash : `d8485adeac6b534418ed0bdc7bd23973a286619e`
+
 # Students
 1. [Lucas Henry](https://github.com/LucasHenry11/)
 2. [Valentin Monod](https://github.com/val-mon/)

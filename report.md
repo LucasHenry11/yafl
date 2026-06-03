@@ -5,7 +5,7 @@ link
 
 # Parser tasks
 
-## **Conditionals and Bindings** (required)
+## **Conditionals** (required)
 who worked on it :
 - name1 : 
 - name2 : 
@@ -13,6 +13,16 @@ who worked on it :
 code reference :
 - file name : 
 - lines : X to Y
+
+## **Bindings** (required)
+who worked on it :
+- name1 :
+- name2 :
+
+code reference :
+- file name :
+- lines : X to Y
+
 
 ## **Type abstractions** (required)
 who worked on it :

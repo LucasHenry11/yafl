@@ -10,84 +10,47 @@ link
 4. [Gonçalo Arieira Esteves](https://github.com/g-ae/)
 
 # Parser tasks
-
 ## **Conditionals** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`conditional`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L165-L187)
+- who worked on it : all students
+- code reference : [`conditional`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L165-L187)
 
 ## **Bindings** (required)
-who worked on it :
-- name1 :
-- name2 :
-
-code reference : [`binding`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L190-L206)
-
+- who worked on it : Valentin
+- code reference : [`binding`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L190-L206)
 
 ## **Type abstractions** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`typeAbstraction`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L208-L237)
+- who worked on it : Axel
+- code reference : [`typeAbstraction`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L208-L237)
 
 ## **Prefix terms** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`prefixTerm`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L85-L99)
+- who worked on it : Valentin
+- code reference : [`prefixTerm`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L85-L99)
 
 ## **Universal types** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`universalType`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L353-L378)
+- who worked on it : Valentin
+- code reference : [`universalType`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L353-L378)
 
 ## **Arrow types** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`typ3`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L323-L333)
+- who worked on it : Gonçalo
+- code reference : [`typ3`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L323-L333)
 
 ## **Parenthesized types** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`parenthesizedType`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L344-L351)
+- who worked on it : Gonçalo, Lucas
+- code reference : [`parenthesizedType`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L344-L351)
 
 ## **Type applications** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`typeApplication`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L102-L130)
+- who worked on it : Axel, Valentin
+- code reference : [`typeApplication`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L102-L130)
 
 ## **Recursive abstractions** (required)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference : [`recursiveAbstraction`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L241-L258)
+- who worked on it : Axel
+- code reference : [`recursiveAbstraction`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L241-L258)
 
 ## **Multiple parameters and arguments** (optional)
-who worked on it :
-- name1 : 
-- name2 : 
-
-code reference :
-- [`trailingTermParameters`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L301-L310)
-- [`trailingTypeParameters`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L313-L320)
+- who worked on it : Axel
+- code reference : [`trailingTypeParameters`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/parser/Parser.scala#L313-L320)
 
 # Optimizer tasks
 ## **Normalization** (optional)
-who worked on it :
-- name1 : Lucas Henry
-
-code reference :
-- ...
+- who worked on it : Lucas
+- code reference : [`normalization`](https://github.com/LucasHenry11/yafl/blob/main/src/main/scala/optimizer/Optimizer.scala#L62)
